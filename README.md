@@ -22,7 +22,7 @@ Funcionalidades principais:
 
 ## Arquitetura do Sistema
 
-A arquitetura do sistema segue a mesma organização apresentada no artigo, estruturada em três camadas principais que funcionam de forma integrada para permitir o monitoramento ambiental em tempo real. Cada camada cumpre uma função específica dentro do fluxo geral do sistema, desde o sensoriamento físico até a visualização dos dados pelo usuário final.
+A arquitetura do sistema segue estruturada em três camadas principais que funcionam de forma integrada para permitir o monitoramento ambiental em tempo real. Cada camada cumpre uma função específica dentro do fluxo geral do sistema, desde o sensoriamento físico até a visualização dos dados pelo usuário final.
 
 ---
 
