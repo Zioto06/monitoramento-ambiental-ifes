@@ -21,7 +21,6 @@ Funcionalidades principais:
 ---
 
 ## Arquitetura do Sistema
-## 🧩 Arquitetura do Sistema
 
 A arquitetura do sistema segue a mesma organização apresentada no artigo, estruturada em três camadas principais que funcionam de forma integrada para permitir o monitoramento ambiental em tempo real. Cada camada cumpre uma função específica dentro do fluxo geral do sistema, desde o sensoriamento físico até a visualização dos dados pelo usuário final.
 
@@ -45,12 +44,6 @@ O ESP32 executa um sistema embarcado desenvolvido especificamente para este proj
 - organizar o funcionamento interno em tarefas separadas (FreeRTOS);
 - manter a conexão Wi-Fi ativa com tentativa de reconexão;
 - disponibilizar as variáveis ambientais na rede por meio do **protocolo SNMP**, operando como **Agente SNMP**.
-
-Nessa camada ocorre a transformação das leituras brutas dos sensores em variáveis acessíveis pela rede. A figura abaixo ilustra esse módulo embarcado:
-
-![Estrutura do Módulo Embarcado](Imagens/Estrutura%20Geral%20Hardware.png)
-
-*(mesma imagem acima, caso deseje outra exclusiva para a ESP32 posso criar)*
 
 ---
 
