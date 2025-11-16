@@ -36,7 +36,7 @@ A imagem a seguir apresenta a organização do módulo de hardware:
 
 ---
 
-### **2. Camada de Coleta, Processamento e Software Embarcado**
+### **2. Software Embarcado na ESP**
 
 O ESP32 executa um sistema embarcado desenvolvido especificamente para este projeto, sendo responsável por:
 
