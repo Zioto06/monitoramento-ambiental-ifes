@@ -21,14 +21,34 @@ Funcionalidades principais:
 ---
 
 ## 📡 Arquitetura do Sistema
+# 📐 Arquitetura do Sistema
 
-```text
-[Sensores]  -->  [ESP32 - Agente SNMP]  -->  [Serviço de Coleta (Python)]
-                                  |
-                                  v
-                               [MySQL]
-                                  |
-                                  v
-                           [Aplicação Web]
+A arquitetura do sistema é organizada em três camadas principais:  
+1. **Camada de Hardware (Sensoriamento)**  
+2. **Camada de Coleta e Processamento (ESP32 + Serviço Python)**  
+3. **Camada de Aplicação Web e Interação com Usuários**
+
+A seguir, são apresentadas as figuras correspondentes a cada parte da arquitetura.
+
+---
+
+## 🔹 1. Estrutura de Hardware
+
+![Estrutura Geral do Hardware](Imagens/Estrutura%20Geral%20Hardware.png)
+
+---
+
+## 🔹 2. Fluxo de Comunicação do Sistema
+
+![Fluxo geral de comunicação](Imagens/Fluxo%20geral%20de%20comunicação%20entre%20os%20módulos%20do%20sistema.png)
+
+---
+
+## 🔹 3. Interação da Aplicação Web com o Sistema
+
+![Interação da aplicação web](Imagens/Interação%20da%20aplicação%20web%20com%20os%20módulos%20do%20sistema.png)
+
+---
+
 
 
