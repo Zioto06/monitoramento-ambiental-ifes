@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Painel de Monitoramento – Série Histórica</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { 
+      font-family: system-ui, Segoe UI, Roboto, Arial; 
+      margin: 20px; 
+      position: relative;
+      background-color: #fafafa;
+    }
+
+    .wrap { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+    }
+
+    .grid { 
+      display: grid; 
+      grid-template-columns: 1fr; 
+      gap: 20px; 
+    }
+
+    @media (min-width: 900px) { 
+      .grid { grid-template-columns: 1fr 1fr; } 
+    }
+
+    .card { 
+      padding: 16px; 
+      border: 1px solid #e5e7eb; 
+      border-radius: 12px; 
+      position: relative; 
+      background-color: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .muted { 
+      color: #6b7280; 
+      font-size: 14px; 
+    }
+
+    .chart-container { 
+      position: relative; 
+      width: 100%;
+      aspect-ratio: 16 / 9;
+    }
+
+    canvas + div ul li span {
+      height: 6px !important;
+      width: 60px !important;
+      border-radius: 0 !important;
+    }
+
+    .logo-sistema {
+      display: block;
+      margin-top: 25px;
+      margin-left: auto;
+      width: 230px;
+      height: auto;
+      opacity: 1;
+    }
+
+    .controls {
+      margin: 10px 0 20px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .controls button {
+      border: 1px solid #16a34a;
+      background: #16a34a;
+      color: #fff;
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .controls button.secondary {
+      background: #ffffff;
+      color: #16a34a;
+    }
+
+    .controls input[type="datetime-local"] {
+      padding: 4px 6px;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+      font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      .controls {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .nav-tabs a {
+      text-decoration: none;
+      font-size: 14px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color: #374151;
+    }
+
+    .nav-tabs a.active {
+      border-color: #16a34a;
+      background: #16a34a;
+      color: #ffffff;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- Ajuste as rotas conforme as views do Flask -->
+    <div class="nav-tabs">
+      <a href="{{ url_for('instantaneo') }}">Tempo Real</a>
+      <a href="{{ url_for('index') }}" class="active">Série Histórica</a>
+      <a href="{{ url_for('acima23') }}">Log de Eventos</a>
+    </div>
+
+    <h1>Série Histórica – Temperatura e Umidade</h1>
+    <p class="muted">
+      Fonte: tabela de leituras do banco de dados configurado no backend.
+    </p>
+
+    <!-- Controles para visualizar todos os dados ou apenas uma janela de tempo -->
+    <div class="controls">
+      <div>
+        <button id="btnHome">Todos os registros</button>
+        <button id="btnJanela" class="secondary">Filtrar por intervalo</button>
+      </div>
+      <div id="janelaInputs" style="display:none; gap:6px; align-items:center; flex-wrap:wrap;">
+        <span>De:</span>
+        <input type="datetime-local" id="inicio">
+        <span>Até:</span>
+        <input type="datetime-local" id="fim">
+        <button id="btnAplicar">Aplicar</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Temperatura</h3>
+        <div class="chart-container">
+          <canvas id="chartTemp"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Umidade Relativa</h3>
+        <div class="chart-container">
+          <canvas id="chartUmid"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- 
+      Substitua "logo_sistema.png" pela logo do seu projeto/organização.
+      Coloque o arquivo dentro de static/ no seu projeto Flask.
+    -->
+    <img src="{{ url_for('static', filename='logo_sistema.png') }}" 
+         alt="Logo do sistema de monitoramento" 
+         class="logo-sistema" />
+  </div>
+
+  <script>
+    const tempCtx = document.getElementById('chartTemp').getContext('2d');
+    const umidCtx = document.getElementById('chartUmid').getContext('2d');
+
+    const btnHome = document.getElementById('btnHome');
+    const btnJanela = document.getElementById('btnJanela');
+    const janelaInputs = document.getElementById('janelaInputs');
+    const inicio = document.getElementById('inicio');
+    const fim = document.getElementById('fim');
+    const btnAplicar = document.getElementById('btnAplicar');
+
+    let allData = [];          // todos os registros vindos da API /api/leituras
+    let currentMode = 'home';  // 'home' = todos os dados, 'janela' = filtrado por período
+
+    function formatPtBR(value) {
+      if (typeof value !== 'number') return value;
+      return value.toLocaleString('pt-BR', {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1
+      });
+    }
+
+    let chartTemp = new Chart(tempCtx, {
+      type: 'line',
+      data: { labels: [], datasets: [
+        { label: 'DHT11', data: [], tension: 0.25, borderWidth: 3 },
+        { label: 'DHT22', data: [], tension: 0.25, borderWidth: 3 }
+      ]},
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { left: 10, right: 10, top: 10, bottom: 10 } },
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { usePointStyle: true, pointStyle: 'line', boxWidth: 50 }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) label += ': ';
+                const y = context.parsed.y;
+                if (y != null) label += formatPtBR(y) + ' °C';
+                return label;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { display: false },
+            title: {
+              display: true,
+              text: 'DateTime',
+              color: '#374151',
+              font: { size: 14, weight: '500' }
+            }
+          },
+          y: {
+            beginAtZero: false,
+            title: {
+              display: true,
+              text: '°C',
+              color: '#374151',
+              font: { size: 14, weight: '600' }
+            }
+          }
+        }
+      }
+    });
+
+    let chartUmid = new Chart(umidCtx, {
+      type: 'line',
+      data: { labels: [], datasets: [
+        { label: 'DHT11', data: [], tension: 0.25, borderWidth: 3 },
+        { label: 'DHT22', data: [], tension: 0.25, borderWidth: 3 }
+      ]},
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { left: 10, right: 10, top: 10, bottom: 10 } },
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { usePointStyle: true, pointStyle: 'line', boxWidth: 50 }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) label += ': ';
+                const y = context.parsed.y;
+                if (y != null) label += formatPtBR(y) + ' %';
+                return label;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { display: false },
+            title: {
+              display: true,
+              text: 'DateTime',
+              color: '#374151',
+              font: { size: 14, weight: '500' }
+            }
+          },
+          y: {
+            beginAtZero: false,
+            title: {
+              display: true,
+              text: '%',
+              color: '#374151',
+              font: { size: 14, weight: '600' }
+            }
+          }
+        }
+      }
+    });
+
+    function renderFromData(data) {
+      const DHT11 = data.filter(r => r.sensor === 'DHT11');
+      const DHT22 = data.filter(r => r.sensor === 'DHT22');
+
+      // usa a maior lista como base de labels
+      const labels = (DHT11.length >= DHT22.length ? DHT11 : DHT22).map(r => r.momento);
+
+      const tDHT11 = labels.map(lbl => (DHT11.find(x => x.momento === lbl) || {}).temp ?? null);
+      const tDHT22 = labels.map(lbl => (DHT22.find(x => x.momento === lbl) || {}).temp ?? null);
+      const hDHT11 = labels.map(lbl => (DHT11.find(x => x.momento === lbl) || {}).umid ?? null);
+      const hDHT22 = labels.map(lbl => (DHT22.find(x => x.momento === lbl) || {}).umid ?? null);
+
+      chartTemp.data.labels = labels;
+      chartTemp.data.datasets[0].data = tDHT11;
+      chartTemp.data.datasets[1].data = tDHT22;
+      chartTemp.update();
+
+      chartUmid.data.labels = labels;
+      chartUmid.data.datasets[0].data = hDHT11;
+      chartUmid.data.datasets[1].data = hDHT22;
+      chartUmid.update();
+    }
+
+    function applyCurrentWindow() {
+      if (!inicio.value || !fim.value) return;
+
+      const dtIni = new Date(inicio.value);
+      const dtFim = new Date(fim.value);
+
+      const filtrado = allData.filter(r => {
+        const dt = new Date(r.momento);
+        return dt >= dtIni && dt <= dtFim;
+      });
+
+      renderFromData(filtrado);
+    }
+
+    async function fetchData() {
+      const res = await fetch('/api/leituras');
+      const data = await res.json();
+
+      allData = data;
+
+      if (currentMode === 'home') {
+        renderFromData(allData);
+      } else if (currentMode === 'janela') {
+        applyCurrentWindow();
+      }
+    }
+
+    btnHome.addEventListener('click', () => {
+      currentMode = 'home';
+      janelaInputs.style.display = 'none';
+      renderFromData(allData);
+    });
+
+    btnJanela.addEventListener('click', () => {
+      currentMode = 'janela';
+      janelaInputs.style.display = 'flex';
+    });
+
+    btnAplicar.addEventListener('click', () => {
+      if (!inicio.value || !fim.value) {
+        alert('Selecione início e fim da janela');
+        return;
+      }
+      currentMode = 'janela';
+      applyCurrentWindow();
+    });
+
+    // Busca inicial e atualização periódica
+    fetchData();
+    setInterval(fetchData, 30000);
+  </script>
+</body>
+</html>

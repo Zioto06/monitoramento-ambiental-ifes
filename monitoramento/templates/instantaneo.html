@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tempo Real – Monitoramento Ambiental</title>
+
+  <style>
+    body {
+      font-family: system-ui, Segoe UI, Roboto, Arial;
+      margin: 20px;
+      background-color: #fafafa;
+    }
+
+    .wrap {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .muted {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .nav-tabs a {
+      text-decoration: none;
+      font-size: 14px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color: #374151;
+    }
+
+    .nav-tabs a.active {
+      border-color: #16a34a;
+      background: #16a34a;
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .card {
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      border-left: 6px solid #16a34a;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+
+    .valor-principal {
+      font-size: 40px;
+      font-weight: 600;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .valor-principal span.unidade {
+      font-size: 22px;
+      color: #4b5563;
+    }
+
+    .linha {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+
+    .linha small {
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    .status {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .logo-ifes {
+      display: block;
+      margin-top: 25px;
+      margin-left: auto;
+      width: 200px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- Ajuste as rotas conforme as views do Flask -->
+    <div class="nav-tabs">
+      <a href="{{ url_for('instantaneo') }}" class="active">Tempo Real</a>
+      <a href="{{ url_for('index') }}">Série Histórica</a>
+      <a href="{{ url_for('acima23') }}">Log de Eventos</a>
+    </div>
+
+    <h1>Tempo Real – Leitura do Sensor</h1>
+    <p class="muted">
+      Leitura SNMP em tempo real da temperatura e umidade fornecidas pela ESP32.
+    </p>
+
+    <div class="card">
+      <h2>Leitura instantânea</h2>
+
+      <div class="valor-principal">
+        <span id="temp-valor">--</span>
+        <span class="unidade">°C</span>
+      </div>
+
+      <div class="linha">
+        Umidade: <strong><span id="umid-valor">--</span> %</strong>
+      </div>
+
+      <div class="linha">
+        <small>Última atualização: <span id="momento-valor">--</span></small>
+      </div>
+
+      <p id="status-msg" class="status">
+        Aguardando primeira leitura do sensor...
+      </p>
+    </div>
+
+    <!-- 
+      Substitua "logo_sistema.png" pela logo do seu projeto/organização.
+      Coloque o arquivo dentro de static/ no seu projeto Flask.
+    -->
+    <img src="{{ url_for('static', filename='logo_sistema.png') }}"
+         alt="Logo do sistema de monitoramento"
+         class="logo-ifes" />
+  </div>
+
+  <script>
+    function formatPtBR(value) {
+      if (typeof value !== 'number') return value;
+      return value.toLocaleString('pt-BR', {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1
+      });
+    }
+
+    async function atualizarDHT22() {
+      const status = document.getElementById('status-msg');
+
+      try {
+        const res = await fetch('/api/dht22_snmp');
+        if (!res.ok) {
+          throw new Error('HTTP ' + res.status);
+        }
+
+        const data = await res.json();
+
+        if (data.temp !== undefined && data.temp !== null) {
+          document.getElementById('temp-valor').textContent = formatPtBR(data.temp);
+        } else {
+          document.getElementById('temp-valor').textContent = '--';
+        }
+
+        if (data.umid !== undefined && data.umid !== null) {
+          document.getElementById('umid-valor').textContent = formatPtBR(data.umid);
+        } else {
+          document.getElementById('umid-valor').textContent = '--';
+        }
+
+        if (data.momento) {
+          document.getElementById('momento-valor').textContent = data.momento;
+        }
+
+        if (status) {
+          status.textContent = 'Leitura atualizada com sucesso.';
+        }
+      } catch (e) {
+        console.log('Erro ao buscar DHT22 tempo real:', e);
+        if (status) {
+          status.textContent = 'Erro ao atualizar leitura. Verifique o backend ou a conexão com a ESP32.';
+        }
+      }
+    }
+
+    // Primeira leitura imediata
+    atualizarDHT22();
+    // Atualiza a cada 30 segundos
+    setInterval(atualizarDHT22, 30000);
+  </script>
+</body>
+</html>

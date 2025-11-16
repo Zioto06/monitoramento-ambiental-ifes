@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Log de Eventos – Valores Acima do Limiar</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: system-ui, Segoe UI, Roboto, Arial;
+      margin: 20px;
+      background: #fafafa;
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Abas de navegação (ajuste rotas no Flask) */
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .nav-tabs a {
+      text-decoration: none;
+      font-size: 14px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color: #374151;
+    }
+    .nav-tabs a.active {
+      border-color: #16a34a;
+      background: #16a34a;
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    h1 {
+      margin-bottom: 4px;
+    }
+
+    .muted {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    @media (min-width: 900px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+    }
+
+    .logo-sistema {
+      display: block;
+      margin-top: 25px;
+      margin-left: auto;
+      width: 200px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- Ajuste as rotas conforme as views do Flask -->
+    <div class="nav-tabs">
+      <a href="{{ url_for('instantaneo') }}">Tempo Real</a>
+      <a href="{{ url_for('index') }}">Série Histórica</a>
+      <a href="{{ url_for('acima23') }}" class="active">Log de Eventos</a>
+    </div>
+
+    <h1>Log de Eventos – Valores Acima do Limiar</h1>
+    <p class="muted">
+      Temperatura acima de {{ limite_temp }} °C (ambos os sensores)
+    </p>
+    <p class="muted">
+      Umidade acima de {{ limite_umid }} % (ambos os sensores)
+    </p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Temperatura acima do limiar</h3>
+        <div class="chart-container">
+          <canvas id="chartTempLimite"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Umidade acima do limiar</h3>
+        <div class="chart-container">
+          <canvas id="chartUmidLimite"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Substitua "logo_sistema.png" pela logo do seu projeto/organização -->
+    <img src="{{ url_for('static', filename='logo_sistema.png') }}"
+         class="logo-sistema"
+         alt="Logo do sistema de monitoramento" />
+  </div>
+
+  <script>
+    const tempCtx = document.getElementById('chartTempLimite').getContext('2d');
+    const umidCtx = document.getElementById('chartUmidLimite').getContext('2d');
+
+    function formatPtBR(value) {
+      if (typeof value !== 'number') return value;
+      return value.toLocaleString('pt-BR', {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1
+      });
+    }
+
+    const chartTempLimite = new Chart(tempCtx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          { label: 'DHT11', data: [], tension: 0.25, borderWidth: 3 },
+          { label: 'DHT22', data: [], tension: 0.25, borderWidth: 3 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { left: 10, right: 10, top: 10, bottom: 10 } },
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { usePointStyle: true, pointStyle: 'line', boxWidth: 50 }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) label += ': ';
+                const y = context.parsed.y;
+                if (y != null) label += formatPtBR(y) + ' °C';
+                return label;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { display: false },
+            title: {
+              display: true,
+              text: 'DateTime',
+              color: '#374151',
+              font: { size: 14, weight: '500' }
+            }
+          },
+          y: {
+            beginAtZero: false,
+            title: {
+              display: true,
+              text: '°C',
+              color: '#374151',
+              font: { size: 14, weight: '600' }
+            }
+          }
+        }
+      }
+    });
+
+    const chartUmidLimite = new Chart(umidCtx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          { label: 'DHT11', data: [], tension: 0.25, borderWidth: 3 },
+          { label: 'DHT22', data: [], tension: 0.25, borderWidth: 3 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { left: 10, right: 10, top: 10, bottom: 10 } },
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { usePointStyle: true, pointStyle: 'line', boxWidth: 50 }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) label += ': ';
+                const y = context.parsed.y;
+                if (y != null) label += formatPtBR(y) + ' %';
+                return label;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { display: false },
+            title: {
+              display: true,
+              text: 'DateTime',
+              color: '#374151',
+              font: { size: 14, weight: '500' }
+            }
+          },
+          y: {
+            beginAtZero: false,
+            title: {
+              display: true,
+              text: '%',
+              color: '#374151',
+              font: { size: 14, weight: '600' }
+            }
+          }
+        }
+      }
+    });
+
+    // Busca dados de temperatura acima do limiar
+    async function fetchTempAcima() {
+      try {
+        const res = await fetch('/api/leituras_acima23');
+        const data = await res.json();
+
+        const DHT11 = data.filter(r => r.sensor === 'DHT11');
+        const DHT22 = data.filter(r => r.sensor === 'DHT22');
+
+        const labels = (DHT11.length >= DHT22.length ? DHT11 : DHT22).map(r => r.momento);
+
+        const tDHT11 = labels.map(lbl => (DHT11.find(x => x.momento === lbl) || {}).temp ?? null);
+        const tDHT22 = labels.map(lbl => (DHT22.find(x => x.momento === lbl) || {}).temp ?? null);
+
+        chartTempLimite.data.labels = labels;
+        chartTempLimite.data.datasets[0].data = tDHT11;
+        chartTempLimite.data.datasets[1].data = tDHT22;
+        chartTempLimite.update();
+      } catch (e) {
+        console.log('Erro ao carregar leituras de temperatura acima do limiar:', e);
+      }
+    }
+
+    // Busca dados de umidade acima do limiar
+    async function fetchUmidAcima() {
+      try {
+        const res = await fetch('/api/leituras_acima_umid');
+        const data = await res.json();
+
+        const DHT11 = data.filter(r => r.sensor === 'DHT11');
+        const DHT22 = data.filter(r => r.sensor === 'DHT22');
+
+        const labels = (DHT11.length >= DHT22.length ? DHT11 : DHT22).map(r => r.momento);
+
+        const hDHT11 = labels.map(lbl => (DHT11.find(x => x.momento === lbl) || {}).umid ?? null);
+        const hDHT22 = labels.map(lbl => (DHT22.find(x => x.momento === lbl) || {}).umid ?? null);
+
+        chartUmidLimite.data.labels = labels;
+        chartUmidLimite.data.datasets[0].data = hDHT11;
+        chartUmidLimite.data.datasets[1].data = hDHT22;
+        chartUmidLimite.update();
+      } catch (e) {
+        console.log('Erro ao carregar leituras de umidade acima do limiar:', e);
+      }
+    }
+
+    function atualizarTudo() {
+      fetchTempAcima();
+      fetchUmidAcima();
+    }
+
+    atualizarTudo();
+    setInterval(atualizarTudo, 30000);
+  </script>
+</body>
+</html>
