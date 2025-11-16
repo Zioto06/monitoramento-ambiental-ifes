@@ -22,11 +22,11 @@ Funcionalidades principais:
 
 ## Arquitetura do Sistema
 
-A arquitetura do sistema segue estruturada partes que funcionam de forma integrada para permitir o monitoramento ambiental em tempo real. Cada camada uma função específica dentro do fluxo geral do sistema, desde o sensoriamento físico até a visualização dos dados pelo usuário final.
+A arquitetura do sistema segue estruturada em partes que funcionam de forma integrada para permitir o monitoramento ambiental em tempo real. Cada camada possui uma função específica dentro do fluxo geral do sistema, desde o sensoriamento físico até a visualização dos dados pelo usuário final.
 
 ---
 
-### **1. Camada de Hardware (Sensoriamento)**
+### **1. Estrutura de Hardware**
 
 Essa camada é responsável pela aquisição das variáveis ambientais. Ela é composta pelos sensores digitais **DHT11** e **DHT22**, conectados a um **ESP32**, além de um **display OLED (via I2C)** utilizado para exibição local e um **botão físico** para ativar/desativar o display.
 
@@ -47,7 +47,7 @@ O ESP32 executa um sistema embarcado desenvolvido especificamente para este proj
 
 ---
 
-### **3. Camada de Serviço de Coleta e Banco de Dados**
+### **3. Serviço de Coleta, armazenamento no Banco de Dados e Alertas SMTP**
 
 No servidor roda um serviço desenvolvido em Python, responsável por:
 
@@ -64,7 +64,7 @@ A figura seguinte apresenta o fluxo lógico entre os módulos:
 
 ---
 
-### **4. Camada de Aplicação Web e Interação com Usuários**
+### **4. Aplicação Web e Interação com Usuários**
 
 A aplicação web funciona como o módulo de apresentação, permitindo ao usuário:
 
