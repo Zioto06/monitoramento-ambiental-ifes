@@ -22,11 +22,13 @@ Funcionalidades principais:
 
 ## 📡 Arquitetura do Sistema
 
-```mermaid
-flowchart TD
-    A[Sensores] --> B[ESP32 - Agente SNMP]
-    B --> C[Serviço de Coleta (Python)]
-    C --> D[MySQL]
-    D --> E[Aplicação Web]
+```text
+[Sensores]  -->  [ESP32 - Agente SNMP]  -->  [Serviço de Coleta (Python)]
+                                  |
+                                  v
+                               [MySQL]
+                                  |
+                                  v
+                           [Aplicação Web]
 
 
