@@ -23,32 +23,38 @@ Funcionalidades principais:
 ## 📡 Arquitetura do Sistema
 # 📐 Arquitetura do Sistema
 
-A arquitetura do sistema é organizada em três camadas principais:  
+A arquitetura do sistema é organizada em três camadas principais:
+
 1. **Camada de Hardware (Sensoriamento)**  
-2. **Camada de Coleta e Processamento (ESP32 + Serviço Python)**  
-3. **Camada de Aplicação Web e Interação com Usuários**
+   Responsável pela aquisição das variáveis ambientais por meio dos sensores DHT11 e DHT22, conectados à ESP32 via protocolo One-Wire.
+
+2. **Camada de Coleta, Processamento e Software Embarcado (ESP32 + Serviço Python)**  
+   A ESP32 executa o software embarcado responsável por:
+   - realizar leituras periódicas de temperatura e umidade,  
+   - atualizar o display OLED,  
+   - disponibilizar as variáveis na rede por meio do protocolo **SNMP**, atuando como um *Agente SNMP*,  
+   - gerenciar tarefas internas via FreeRTOS (leitura dos sensores, controle de Wi-Fi, atualização do display).  
+
+   Paralelamente, o **Serviço de Coleta em Python**, executado no servidor, atua como *Gerenciador SNMP*, consultando os valores expostos pela ESP32, armazenando-os no banco de dados e operando o módulo de alertas.
+
+3. **Camada de Aplicação Web e Interação com Usuários**  
+   Responsável pela visualização das leituras em tempo real, consulta ao banco de dados, geração de gráficos históricos e exibição do log de eventos acima do limiar.
+
+---
 
 A seguir, são apresentadas as figuras correspondentes a cada parte da arquitetura.
 
 ---
 
-## 🔹 1. Estrutura de Hardware
-
-![Estrutura Geral do Hardware](Imagens/Estrutura%20Geral%20Hardware.png)
-
----
-
-## 🔹 2. Fluxo de Comunicação do Sistema
-
-![Fluxo geral de comunicação](Imagens/Fluxo%20geral%20de%20comunicação%20entre%20os%20módulos%20do%20sistema.png)
+### **1. Camada de Hardware**
+![Estrutura Geral de Hardware](Imagens/Estrutura%20Geral%20Hardware.png)
 
 ---
 
-## 🔹 3. Interação da Aplicação Web com o Sistema
-
-![Interação da aplicação web](Imagens/Interação%20da%20aplicação%20web%20com%20os%20módulos%20do%20sistema.png)
+### **2. Camada de Coleta, Processamento e Software Embarcado**
+![Fluxo Geral](Imagens/Fluxo%20geral%20de%20comunicação%20entre%20os%20módulos%20do%20sistema.png)
 
 ---
 
-
-
+### **3. Camada de Aplicação Web**
+![Interação com a Aplicação Web](Imagens/Interação%20da%20aplicação%20web%20com%20os%20módulos%20do%20sistema.png)
