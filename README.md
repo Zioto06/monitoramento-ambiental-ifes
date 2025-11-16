@@ -4,7 +4,7 @@ Sistema de monitoramento ambiental desenvolvido para salas de servidores, utiliz
 
 ---
 
-## 🖥️ Visão Geral
+## Visão Geral
 
 Este projeto realiza o monitoramento contínuo de temperatura e umidade utilizando sensores DHT acoplados a um ESP32, que atua como **Agente SNMP**. Um serviço em Python consulta periodicamente o dispositivo, grava os registros em um banco MySQL e disponibiliza uma **aplicação web** para visualização em tempo real, análise histórica e log de eventos acima dos limiares configurados.
 
@@ -22,7 +22,7 @@ Funcionalidades principais:
 
 ## Arquitetura do Sistema
 
-A arquitetura do sistema segue estruturada em três camadas principais que funcionam de forma integrada para permitir o monitoramento ambiental em tempo real. Cada camada cumpre uma função específica dentro do fluxo geral do sistema, desde o sensoriamento físico até a visualização dos dados pelo usuário final.
+A arquitetura do sistema segue estruturada partes que funcionam de forma integrada para permitir o monitoramento ambiental em tempo real. Cada camada uma função específica dentro do fluxo geral do sistema, desde o sensoriamento físico até a visualização dos dados pelo usuário final.
 
 ---
 
