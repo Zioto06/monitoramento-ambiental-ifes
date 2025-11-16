@@ -22,3 +22,10 @@ Funcionalidades principais:
 
 ## 📡 Arquitetura do Sistema
 
+[ Sensores ] → [ ESP32 – Agente SNMP ] → [ Serviço de Coleta (Python) ]  
+↓  
+[ MySQL ]  
+↓  
+[ Aplicação Web ]
+
+
