@@ -24,8 +24,8 @@ Funcionalidades principais:
 
 ```mermaid
 flowchart TD
-    A[Sensores] --> B[ESP32<br/>Agente SNMP]
-    B --> C[Serviço de Coleta<br/>(Python)]
+    A[Sensores] --> B[ESP32 - Agente SNMP]
+    B --> C[Serviço de Coleta (Python)]
     C --> D[MySQL]
     D --> E[Aplicação Web]
 
