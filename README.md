@@ -22,10 +22,11 @@ Funcionalidades principais:
 
 ## 📡 Arquitetura do Sistema
 
-[ Sensores ] → [ ESP32 – Agente SNMP ] → [ Serviço de Coleta (Python) ]  
-↓  
-[ MySQL ]  
-↓  
-[ Aplicação Web ]
+```mermaid
+flowchart TD
+    A[Sensores] --> B[ESP32<br/>Agente SNMP]
+    B --> C[Serviço de Coleta<br/>(Python)]
+    C --> D[MySQL]
+    D --> E[Aplicação Web]
 
 
