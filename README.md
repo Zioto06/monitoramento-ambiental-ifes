@@ -94,23 +94,44 @@ Toda a solução foi projetada de forma modular, permitindo fácil manutenção,
 A organização das pastas e arquivos segue um padrão simples e objetivo para facilitar manutenção, execução e entendimento do sistema de monitoramento.
 
 README.md
+
+Imagens/
+
 monitoramento/
+
 │
+
 ├── static/
-│ └── image.jpg
+
+│   └── image.jpg
+
 │
+
 ├── templates/
-│ ├── acima23.html
-│ ├── index.html
-│ └── instantaneo.html
+
+│   ├── acima23.html
+
+│   ├── index.html
+
+│   └── instantaneo.html
+
 │
+
 ├── @.env
+
 ├── Atualizado.ino
+
 ├── DDL_leitura.sql
+
 ├── app.py
+
 ├── coletor_snmp.py
+
 ├── modelo3d.f3d
+
 ├── requirements.txt
+
+
 
 
 ---
