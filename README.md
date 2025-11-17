@@ -89,3 +89,123 @@ A figura abaixo resume a interação entre a aplicação e os demais componentes
 
 Toda a solução foi projetada de forma modular, permitindo fácil manutenção, substituição de componentes e expansão futura para novos sensores ou novas funcionalidades.
 
+# Estrutura do Projeto
+
+A organização das pastas e arquivos segue um padrão simples e objetivo para facilitar manutenção, execução e entendimento do sistema de monitoramento.
+
+README.md
+monitoramento/
+│
+├── static/
+│ └── image.jpg
+│
+├── templates/
+│ ├── acima23.html
+│ ├── index.html
+│ └── instantaneo.html
+│
+├── @.env
+├── Atualizado.ino
+├── DDL_leitura.sql
+├── app.py
+├── coletor_snmp.py
+├── modelo3d.f3d
+├── requirements.txt
+
+
+---
+
+## **/static/**
+Contém arquivos estáticos usados no painel web.
+
+- **image.jpg**  
+  Imagem exibida no rodapé das páginas HTML (ex.: logomarca).
+
+Esses arquivos são servidos pelo Flask usando `url_for('static', filename='...')`.
+
+---
+
+## **/templates/**
+Contém todas as páginas HTML renderizadas pelo Flask.
+
+- **index.html** – Página da *Série Histórica* com gráficos de temperatura e umidade.  
+- **instantaneo.html** – Página *Tempo Real*, leitura SNMP direta da ESP32.  
+- **acima23.html** – Página do *Log de Eventos*, exibindo leituras acima do limiar.
+
+Todas utilizam o sistema de navegação por abas (Tempo Real, Série Histórica, Log de Eventos).
+
+---
+
+## **Atualizado.ino**
+Arquivo de firmware para a **ESP32**, responsável por:
+
+- ler os sensores DHT11 e DHT22  
+- exibir dados no display OLED  
+- publicar temperatura e umidade via SNMP  
+- gerenciar reconexão Wi-Fi  
+- executar tarefas via FreeRTOS  
+
+Este arquivo deve ser enviado para a placa ESP32 usando a IDE Arduino.
+
+---
+
+## **DDL_leitura.sql**
+Script SQL que:
+
+- cria o banco de dados  
+- cria a tabela de leituras  
+- cria um usuário com acesso somente SELECT
+
+O arquivo é genérico e permite personalização de nomes e credenciais.
+
+---
+
+## **app.py**
+Aplicação **Flask** que:
+
+- disponibiliza todas as páginas HTML  
+- fornece APIs JSON para os gráficos (`/api/...`)  
+- consulta leituras no MySQL  
+- exibe leituras da ESP32 em tempo real via SNMP  
+
+É a interface web do sistema como um todo.
+
+---
+
+## **coletor_snmp.py**
+Serviço Python que:
+
+- consulta a ESP32 via SNMP periodicamente  
+- grava as leituras no MySQL  
+- envia alertas por e-mail quando limites são ultrapassados  
+- executa continuamente e registra logs  
+
+Todas as configurações vêm do arquivo **@.env**.
+
+---
+
+## **@.env**
+Arquivo com todas as configurações externas:
+
+- IP da ESP32  
+- comunidade SNMP  
+- OIDs dos sensores  
+- credenciais MySQL  
+- limiares de alerta  
+- configurações SMTP  
+- porta do servidor Flask  
+
+O usuário deve ajustar este arquivo antes de rodar o sistema.
+
+---
+
+## **requirements.txt**
+O sistema usa apenas três bibliotecas Python:
+
+- **Flask** – para rodar a aplicação web.
+- **mysql-connector-python** – para conectar ao banco MySQL.
+- **python-dotenv** – para carregar variáveis do arquivo `.env`.
+
+Essas três dependências são suficientes para executar todo o projeto.
+
+
