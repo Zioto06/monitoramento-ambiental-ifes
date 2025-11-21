@@ -168,7 +168,7 @@ Arquivo de firmware para a **ESP32**, responsável por:
 - gerenciar reconexão Wi-Fi  
 - executar tarefas via FreeRTOS  
 
-Este arquivo deve ser enviado para a placa ESP32 usando a IDE Arduino.
+Este arquivo deve ser enviado para a placa ESP32.
 
 ---
 
