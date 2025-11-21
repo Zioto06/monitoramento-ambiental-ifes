@@ -30,7 +30,7 @@ A arquitetura do sistema segue estruturada em partes que funcionam de forma inte
 
 ### **1. Estrutura de Hardware**
 
-Essa camada é responsável pela aquisição das variáveis ambientais. Ela é composta pelos sensores digitais **DHT11** e **DHT22**, conectados a um **ESP32**, além de um **display OLED (via I2C)** utilizado para exibição local e um **botão físico** para ativar/desativar o display.
+Essa camada é responsável pela aquisição das variáveis ambientais. Ela é composta pelos sensores digitais **DHT11** e **DHT22**, conectados a um **ESP32 (via one-wire)**, além de um **display OLED (via I2C)** utilizado para exibição local e um **botão físico** para ativar/desativar o display.
 
 A imagem a seguir apresenta a organização do módulo de hardware:
 
