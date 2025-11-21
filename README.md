@@ -125,6 +125,8 @@ monitoramento/
 
 ├── DDL_leitura.sql
 
+├── PA3.sch
+
 ├── app.py
 
 ├── coletor_snmp.py
