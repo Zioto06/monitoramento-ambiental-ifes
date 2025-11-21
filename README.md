@@ -34,7 +34,7 @@ Essa camada é responsável pela aquisição das variáveis ambientais. Ela é c
 
 A imagem a seguir apresenta a organização do módulo de hardware:
 
-![Estrutura Geral do Hardware](Imagens/Estrutura%20Geral%20Hardware.png)
+![Estrutura Geral do Hardware](Imagens/Estrutura%20Geral%20do%20Hardware.png)
 
 ---
 
