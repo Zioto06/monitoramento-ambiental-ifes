@@ -5,12 +5,17 @@ Sistema de monitoramento ambiental desenvolvido para salas de servidores, utiliz
 Projeto desenvolvido no IFES – Campus Guarapari.
 
 Alunos:
+
 Daniel Prezotti Marchesi
+
 Gustavo Delpupo Ribeiro
+
 João Pedro Queiroz dos Santos 
+
 Luis Philipe Zioto de Barros
 
 Orientador:
+
 Bruno Neves Amigo
 
 ---
