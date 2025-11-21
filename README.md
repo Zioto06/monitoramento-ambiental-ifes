@@ -183,6 +183,12 @@ O arquivo é genérico e permite personalização de nomes e credenciais.
 
 ---
 
+## **PA3.sch**
+
+Arquivo de esquema elétrico criado no Autodesk EAGLE, contendo o circuito de interligação entre microcontrolador, sensores, display e demais componentes do protótipo.
+
+---
+
 ## **app.py**
 Aplicação **Flask** que:
 
@@ -192,6 +198,8 @@ Aplicação **Flask** que:
 - exibe leituras da ESP32 em tempo real via SNMP  
 
 É a interface web do sistema como um todo.
+
+Todas as configurações vêm do arquivo @.env.
 
 ---
 
@@ -207,6 +215,12 @@ Todas as configurações vêm do arquivo **@.env**.
 
 ---
 
+## **modelo3d.f3d**
+
+Arquivo de modelagem tridimensional desenvolvido no Autodesk Fusion 360, representando o invólucro da caixa utilizado para acomodar e fixar o módulo de hardware.
+
+---
+
 ## **@.env**
 Arquivo com todas as configurações externas:
 
@@ -218,7 +232,7 @@ Arquivo com todas as configurações externas:
 - configurações SMTP  
 - porta do servidor Flask  
 
-O usuário deve ajustar este arquivo antes de rodar o sistema.
+**O usuário deve ajustar este arquivo antes de rodar o sistema**.
 
 ---
 
