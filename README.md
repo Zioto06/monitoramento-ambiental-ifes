@@ -144,9 +144,7 @@ monitoramento/
 Contém arquivos estáticos usados no painel web.
 
 - **image.jpg**  
-  Imagem exibida no rodapé das páginas HTML (ex.: logomarca).
-
-Esses arquivos são servidos pelo Flask usando `url_for('static', filename='...')`.
+  Imagem exibida no rodapé das páginas HTML 
 
 ---
 
